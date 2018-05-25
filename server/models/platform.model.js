@@ -24,7 +24,7 @@ const PlatformSchema = new Schema({
   }
 })
 
-PlatformSchema.statics.getPlatformList = async function () {
+PlatformSchema.statics.getList = async function () {
   let results = []
   await this.find().then(function (doc) {
     results = doc

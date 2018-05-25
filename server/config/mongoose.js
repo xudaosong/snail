@@ -11,6 +11,8 @@ module.exports = function () {
   })
 
   require('../models/platform.model')
+  require('../models/loan.model')
+  require('../models/repayment.model')
 
   return db
 }

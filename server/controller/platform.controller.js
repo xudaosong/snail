@@ -2,13 +2,12 @@ const mongoose = require('mongoose')
 const { response } = require('../utils/require')
 const Platform = mongoose.model('Platform')
 
-exports.list = async (ctx, next) => {
-  console.log(new mongoose.Types.ObjectId())
-  const results = await Platform.getPlatformList()
+exports.getList = async (ctx, next) => {
+  const results = await Platform.getList()
   ctx.response.body = response(results)
 }
 
-exports.create = async (ctx, next) => {
+exports.add = async (ctx, next) => {
   const platform = new Platform(ctx.request.body)
   ctx.response.body = await platform.save().then(function () {
     return response()
