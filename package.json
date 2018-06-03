@@ -1,9 +1,10 @@
 {
   "private": true,
   "scripts": {
-    "start": "npm run server:dev & npm run client:dev",
-    "client:dev": "set PORT=3000 & roadhog server",
-    "server:dev": "set NODE_ENV=development & nodemon --inspect server/index.js",
+    "start": "npm run client:dev&npm run server:dev",
+    "client:dev": "set PORT=3000&&set ESLINT=none&&set BROWSER=none&&roadhog server",
+    "server:dev": "set NODE_ENV=development&nodemon --inspect server/index.js",
+    "server:production": "set NODE_ENV=production&nodemon server/index.js",
     "build": "roadhog build",
     "lint": "eslint --ext .js src server",
     "precommit": "npm run lint"
@@ -15,6 +16,7 @@
     "koa-bodyparser": "^4.2.0",
     "koa-router": "^7.4.0",
     "koa-static": "^4.0.2",
+    "lodash": "^4.17.10",
     "moment": "^2.22.1",
     "mongoose": "^5.1.1",
     "react": "^16.3.2",

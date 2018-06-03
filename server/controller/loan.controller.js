@@ -22,8 +22,29 @@ const calcInterest = function (principal, interestRate, currentTerm, toalTerm) {
   return principal * monthInterest * ((1 + monthInterest) ** toalTerm - (1 + monthInterest) ** (currentTerm - 1)) / ((1 + monthInterest) ** toalTerm - 1)
 }
 
+// 平台加息奖励计算，如广信贷
+const calcRewardInterest = function (principal, originalInterest, bonusInterest, toalTerm) {
+  // 计算方法为：每期加息金额 = (标面利息的总和-奖励加息后利息的总和)/总期数
+  let originalInterestAmount = 0
+  let bonusInterestAmount = 0
+  // 获取标面总利息的总和
+  for (let i = 1; i <= toalTerm; i++) {
+    originalInterestAmount += calcInterest(principal, originalInterest, i, toalTerm)
+  }
+  // 获取奖励加息后利息的总和
+  for (let i = 1; i <= toalTerm; i++) {
+    bonusInterestAmount += calcInterest(principal, originalInterest + bonusInterest, i, toalTerm)
+  }
+  return (bonusInterestAmount - originalInterestAmount) / toalTerm
+}
+
 exports.getList = async (ctx, next) => {
   const results = await Loan.getList()
+  ctx.response.body = response(results)
+}
+
+exports.getRepaymentList = async (ctx, next) => {
+  const results = await Repayment.getList({loanId: ctx.request.query.loanId})
   ctx.response.body = response(results)
 }
 
@@ -32,15 +53,28 @@ exports.add = async (ctx, next) => {
   params.platformReward = new LoanReward(params.platformReward)
   params.channelReward = new LoanReward(params.channelReward)
   const loan = new Loan(params)
-  ctx.response.body = await loan.save().then(async function (loan) {
+  ctx.response.body = await loan.save().then(function (loan) {
     switch (loan.repaymentMode) {
       case 1: // 等额本息
         let repayments = []
+        let platformRewardInterest = 0
+        switch (loan.platform) {
+          case '广信贷':
+            platformRewardInterest = calcRewardInterest(loan.principal, loan.interestRate, loan.platformReward.interestRateIncrease, loan.term)
+            break
+        }
         for (let i = 1; i <= loan.term; i++) {
           let interest = calcInterest(loan.principal, loan.interestRate, i, loan.term)
           let principal = calcPrincipal(loan.principal, loan.interestRate, i, loan.term)
           let interestManagementFee = interest * loan.interestManagementFee
-          let platformRewardInterest = calcInterest(loan.principal, loan.platformReward.interestRateIncrease, i, loan.term)
+          // switch (loan.platform) {
+          //   case '广信贷':
+          //     platformRewardInterest = calcRewardInterest(loan.principal, loan.interestRate, loan.platformReward.interestRateIncrease, loan.term)
+          //     break
+          //   default:
+          //     platformRewardInterest = calcInterest(loan.principal, loan.platformReward.interestRateIncrease, i, loan.term)
+          //     break
+          // }
           let platformRewardFee = platformRewardInterest * loan.platformReward.interestManagementFee
           let channelRewardInterest = 0
           switch (loan.channelReward.interestType) {
@@ -55,7 +89,7 @@ exports.add = async (ctx, next) => {
           let totalInterest = interest + platformRewardInterest + channelRewardInterest
           let totalInterestManagementFee = interestManagementFee + platformRewardFee + channelRewardFee
           let totalRepayment = principal + totalInterest
-          let amountReceivable = totalRepayment + totalInterestManagementFee
+          let amountReceivable = totalRepayment - totalInterestManagementFee
 
           repayments.push(new Repayment({
             loan: loan._id,
@@ -75,14 +109,13 @@ exports.add = async (ctx, next) => {
             amountReceivable
           }))
         }
-        await Repayment.insertMany(repayments).then(function (result) {
+        Repayment.insertMany(repayments).then(function (result) {
           loan.repayments = repayments
         })
         break
     }
     return response(loan)
   }).catch(function (err) {
-    console.log(err)
     return response({}, [err], 500)
   })
 }

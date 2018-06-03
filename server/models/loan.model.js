@@ -72,13 +72,13 @@ const LoanSchema = new Schema({
     default: 0,
     required: '请输入利率'
   },
-  // 期限
+  // 借款期限
   term: {
     type: Number,
     default: 0,
     required: '请输入期限'
   },
-  // 期限单位
+  // 借款期限单位
   termUnit: {
     type: String,
     enum: ['月', '日'],
@@ -87,6 +87,7 @@ const LoanSchema = new Schema({
   // 还款方式
   repaymentMode: {
     type: Number,
+    required: '请输入还款方式',
     // 1: '等额本息', 2: '一次性还本付息', 3: '按月付息到期还本'
     enum: [1, 2, 3]
   },
@@ -122,11 +123,13 @@ LoanSchema.method('toJSON', function () {
 
 LoanSchema.statics.getList = async function () {
   let results = []
-  await this.find().then(function (doc) {
-    results = doc
-  }).catch(function (err) {
-    results = err
-  })
+  await this.find()
+    .sort({ platform: 'asc', interestDate: 'desc' })
+    .then(function (doc) {
+      results = doc
+    }).catch(function (err) {
+      results = err
+    })
   return results
 }
 

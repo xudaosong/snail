@@ -1,5 +1,21 @@
 {
-    "extraBabelPlugins": [
-        ["import", { "libraryName": "antd", "libraryDirectory": "es", "style": "css" }]
+  "extraBabelPlugins": [
+    [
+      "import",
+      {
+        "libraryName": "antd",
+        "libraryDirectory": "es",
+        "style": "css"
+      }
     ]
+  ],
+  "proxy": {
+    "/api": {
+      "target": "http://localhost:3003",
+      "changeOrigin": true,
+      "pathRewrite": {
+        "^/api/v1": "/api/v1"
+      }
+    }
+  }
 }

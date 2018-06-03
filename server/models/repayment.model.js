@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
+const ObjectId = require('mongodb').ObjectId
 
 const RepaymentSchema = new Schema({
   // 借款标识
@@ -74,7 +75,7 @@ const RepaymentSchema = new Schema({
   totalRepayment: {
     type: Number
   },
-  // 应收金额
+  // 总应收金额
   amountReceivable: {
     type: Number
   },
@@ -91,9 +92,9 @@ RepaymentSchema.method('toJSON', function () {
   return obj
 })
 
-RepaymentSchema.statics.getList = async function () {
+RepaymentSchema.statics.getList = async function (params) {
   let results = []
-  await this.find().then(function (doc) {
+  await this.find({ loan: new ObjectId(params.loanId) }).then(function (doc) {
     results = doc
   }).catch(function (err) {
     results = err
