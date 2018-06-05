@@ -11,8 +11,8 @@ const LoanRewardSchema = new Schema({
   redEnvelopeType: {
     type: Number,
     default: 1,
-    // 1：投标成功后直接返还；2：红包算入本金并计算利息
-    enum: [1, 2]
+    // 1：投标成功后直接返还；2：红包算入本金并计算利息，3：红包按期返还，不算利息
+    enum: [1, 2, 3]
   },
   // 加息
   interestRateIncrease: {
@@ -33,8 +33,10 @@ const LoanRewardSchema = new Schema({
   interestType: {
     type: Number,
     // 1: 等额本息
-    // 2: 365特权加息
-    emun: [1, 2]
+    // 2: 第一期等额本息的利息做为后面每期的奖励，如365易贷的特权加息
+    // 3. 等额本息固定利息，如广信贷
+    // 4. 一次性还本付息，如饭团金服
+    emun: [1, 2, 3, 4]
   }
 }, { id: false, _id: false }
 )

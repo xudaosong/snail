@@ -101,12 +101,6 @@ export default class LoanAdd extends Component {
   getRewardFormItems = (namespace, label = '') => {
     return [
       {
-        name: `${namespace}.redEnvelope`,
-        type: 'number',
-        label: `${label}红包`,
-        placeholder: `请输入${label}红包`,
-        defaultValue: 0
-      }, {
         name: `${namespace}.redEnvelopeType`,
         type: 'select',
         label: `${label}红包类型`,
@@ -114,16 +108,10 @@ export default class LoanAdd extends Component {
         defaultValue: _.keys(RED_ENVELOPE_TYPE)[0],
         dataSource: _.map(RED_ENVELOPE_TYPE, (value, key) => { return { name: value, value: key } })
       }, {
-        name: `${namespace}.interestRateIncrease`,
-        type: 'percent',
-        label: `${label}加息`,
-        placeholder: `请输入${label}加息`,
-        defaultValue: 0
-      }, {
-        name: `${namespace}.interestManagementFee`,
-        type: 'percent',
-        label: `${label}利息管理费`,
-        placeholder: `请输入${label}利息管理费`,
+        name: `${namespace}.redEnvelope`,
+        type: 'number',
+        label: `${label}红包`,
+        placeholder: `请输入${label}红包`,
         defaultValue: 0
       }, {
         name: `${namespace}.cashBack`,
@@ -138,6 +126,18 @@ export default class LoanAdd extends Component {
         placeholder: `请输入${label}利息类型`,
         defaultValue: _.keys(INTEREST_TYPE)[0],
         dataSource: _.map(INTEREST_TYPE, (value, key) => { return { name: value, value: key } })
+      }, {
+        name: `${namespace}.interestRateIncrease`,
+        type: 'percent',
+        label: `${label}加息`,
+        placeholder: `请输入${label}加息`,
+        defaultValue: 0
+      }, {
+        name: `${namespace}.interestManagementFee`,
+        type: 'percent',
+        label: `${label}利息管理费`,
+        placeholder: `请输入${label}利息管理费`,
+        defaultValue: 0
       }
     ]
   }

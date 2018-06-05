@@ -38,12 +38,12 @@ export default class LoanList extends Component {
     dataIndex: 'interestRate',
     key: 'interestRate',
     render: (item, record) => {
-      let interest = item * 100
+      let interest = (item * 100).toFixed(2)
       if (record.platformReward.interestRateIncrease > 0) {
-        interest = interest + '+' + (record.platformReward.interestRateIncrease * 100)
+        interest = interest + '+' + (record.platformReward.interestRateIncrease * 100).toFixed(2)
       }
       if (record.channelReward.interestRateIncrease > 0) {
-        interest = interest + '+' + (record.platformReward.interestRateIncrease * 100)
+        interest = interest + '+' + (record.channelReward.interestRateIncrease * 100).toFixed(2)
       }
       interest += '%'
       return interest
