@@ -12,7 +12,8 @@ const LoanRewardSchema = new Schema({
     type: Number,
     default: 1,
     // 1：投标成功后直接返还；2：红包算入本金并计算利息，3：红包按期返还，不算利息
-    enum: [1, 2, 3]
+    min: 1,
+    max: 3
   },
   // 加息
   interestRateIncrease: {
@@ -36,7 +37,8 @@ const LoanRewardSchema = new Schema({
     // 2: 第一期等额本息的利息做为后面每期的奖励，如365易贷的特权加息
     // 3. 等额本息固定利息，如广信贷
     // 4. 一次性还本付息，如饭团金服
-    emun: [1, 2, 3, 4]
+    min: 1,
+    max: 4
   }
 }, { id: false, _id: false }
 )
@@ -83,7 +85,7 @@ const LoanSchema = new Schema({
   // 借款期限单位
   termUnit: {
     type: String,
-    enum: ['月', '日'],
+    enum: ['month', 'day'],
     required: '请输入期限'
   },
   // 还款方式
@@ -91,7 +93,8 @@ const LoanSchema = new Schema({
     type: Number,
     required: '请输入还款方式',
     // 1: '等额本息', 2: '一次性还本付息', 3: '按月付息到期还本'
-    enum: [1, 2, 3]
+    min: 1,
+    max: 3
   },
   // 利息管理费
   interestManagementFee: {

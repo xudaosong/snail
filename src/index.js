@@ -19,6 +19,7 @@ const app = dva({
 // 3. Model
 app.model(require('./models/loan').default)
 app.model(require('./models/statis').default)
+app.model(require('./models/funds').default)
 
 // 4. Router
 app.router(require('./router').default)

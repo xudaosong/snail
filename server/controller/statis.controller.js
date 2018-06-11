@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const { response } = require('../utils/require')
+const moment = require('moment')
 const Repayment = mongoose.model('Repayment')
 
 // 在日期范围内按天统计各平台的回款信息和回款小计
@@ -7,13 +8,28 @@ const Repayment = mongoose.model('Repayment')
 exports.getRepayment = async (ctx, next) => {
   const date = new Date()
   // 设置默认为日期范围为当月
-  const {
-    startDate = new Date(date.getFullYear(), date.getMonth(), 1),
-    endDate = new Date(date.getFullYear(), date.getMonth() + 1, 1)
+  let {
+    startDate = moment().startOf('month'),
+    endDate = null,
+    platform = null,
+    status = null
   } = ctx.request.query
-  const results = await Repayment.aggregate().match({ // 按日期过滤数据
-    repaymentDate: { $gte: new Date(startDate), $lte: new Date(endDate) }
-  }).lookup({ // 以loanId关联Loan表的数据，并通过unwind展开Loan
+  if (endDate === null) {
+    endDate = new Date(date.getFullYear(), date.getMonth() + 1, 1)
+  } else {
+    endDate = moment(endDate).add(1, 'days').format('YYYY-MM-DD')
+  }
+  let firstMatch = {
+    repaymentDate: { $gte: new Date(startDate), $lt: new Date(endDate) } // 按日期过滤数据
+  }
+  let secondMatch = {}
+  if (status) {
+    firstMatch.status = status
+  }
+  if (platform) {
+    secondMatch.platform = platform
+  }
+  const results = await Repayment.aggregate().match(firstMatch).lookup({ // 以loanId关联Loan表的数据，并通过unwind展开Loan
     from: 'Loan',
     localField: 'loan',
     foreignField: '_id',
@@ -45,7 +61,7 @@ exports.getRepayment = async (ctx, next) => {
     totalInterestManagementFee: 1,
     totalRepayment: 1,
     amountReceivable: 1
-  }).sort({ // 按日期排序
+  }).match(secondMatch).sort({ // 按日期排序
     'repaymentDate': 'asc'
   }).exec().then((data) => {
     let content = {

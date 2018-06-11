@@ -4,6 +4,7 @@ import { connect } from 'dva'
 import { Table, Card } from 'antd'
 import moment from 'moment'
 import { routerRedux } from 'dva/router'
+import { TERM_UNIT } from '../../utils/consts'
 
 @connect(({ loan }) => {
   const { loanList = [] } = loan
@@ -52,7 +53,7 @@ export default class LoanList extends Component {
     title: '借款期限',
     dataIndex: 'term',
     key: 'term',
-    render: (term, record) => `${record.term} ${record.termUnit}`
+    render: (term, record) => `${record.term} ${TERM_UNIT[record.termUnit]}`
   }, {
     title: '备注',
     dataIndex: 'remark',

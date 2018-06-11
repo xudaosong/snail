@@ -13,6 +13,16 @@
     }
     td {
         line-height: 30px;
+        padding: 5px;
+        :global .ant-input-number {
+            width: 100%;
+            .ant-input-number-handler-wrap {
+                display: none;
+            }
+            input {
+                text-align: right;
+            }
+        }
     }
     .right {
         text-align: right;

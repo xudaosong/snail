@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
-const Schema = mongoose.Schema
+const math = require('mathjs')
 const ObjectId = require('mongodb').ObjectId
+const Schema = mongoose.Schema
 
 const RepaymentSchema = new Schema({
   // 借款标识
@@ -8,45 +9,60 @@ const RepaymentSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Loan'
   },
+  // 投资平台
+  platform: {
+    type: String,
+    default: '',
+    trim: true,
+    required: '请输入平台名称'
+  },
   // 期数
   period: {
     type: Number,
-    required: '请输入期数'
+    required: '请输入期数',
+    min: 1,
+    max: 60
   },
   // 应收本金
   principal: {
     type: Number,
     default: 0,
-    required: '请输入应收本金'
+    required: '请输入应收本金',
+    set: v => math.format(v, { precision: 14 })
   },
   // 应收利息
   interest: {
     type: Number,
-    required: '请输入应收利息'
+    required: '请输入应收利息',
+    set: v => math.format(v, { precision: 14 })
   },
   // 平台奖励利息
   platformRewardInterest: {
     type: Number,
     default: 0,
-    required: '请输入平台奖励利息'
+    required: '请输入平台奖励利息',
+    set: v => math.format(v, { precision: 14 })
   },
   // 平台奖励利息管理费
   platformRewardFee: {
     type: Number,
     default: 0,
-    required: '请输入平台奖励利息管理费'
+    required: '请输入平台奖励利息管理费',
+    set: v => math.format(v, { precision: 14 })
   },
   // 渠道奖励利息
   channelRewardInterest: {
     type: Number,
     default: 0,
-    required: '请输入渠道奖励利息'
+    required: '请输入渠道奖励利息',
+    set: v => math.format(v, { precision: 14 })
   },
   // 渠道奖励利息管理费
   channelRewardFee: {
     type: Number,
     default: 0,
-    required: '请输入渠道奖励利息管理费'
+    required: '请输入渠道奖励利息管理费',
+    set: v => math.format(v, { precision: 14 })
   },
   // 应还日期
   repaymentDate: {
@@ -56,28 +72,37 @@ const RepaymentSchema = new Schema({
   // 利息管理费
   interestManagementFee: {
     type: Number,
-    required: '请输入利息管理费'
+    required: '请输入利息管理费',
+    set: v => math.format(v, { precision: 14 })
   },
   // 还款状态
+  // 0:'待还款', 1:'已还款', 2:'逾期', 3:'坏账'
   status: {
-    type: String,
-    enum: ['待还款', '已还款', '逾期', '坏账']
+    type: Number,
+    default: 0,
+    min: 0,
+    max: 3,
+    required: '请输入还款状态'
   },
   // 总还款利息
   totalInterest: {
-    type: Number
+    type: Number,
+    set: v => math.format(v, { precision: 14 })
   },
   // 总利息管理费
   totalInterestManagementFee: {
-    type: Number
+    type: Number,
+    set: v => math.format(v, { precision: 14 })
   },
   // 总还款金额
   totalRepayment: {
-    type: Number
+    type: Number,
+    set: v => math.format(v, { precision: 14 })
   },
   // 总应收金额
   amountReceivable: {
-    type: Number
+    type: Number,
+    set: v => math.format(v, { precision: 14 })
   },
   __v: {
     type: Number,

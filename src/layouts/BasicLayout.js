@@ -9,6 +9,7 @@ import LoanAdd from '../routes/loan/LoanAdd'
 import LoanList from '../routes/loan/LoanList'
 import Repayment from '../routes/loan/Repayment'
 import RepaymentStatis from '../routes/statis/RepaymentStatis'
+import Receipt from '../routes/funds/Receipt'
 
 const { Header, Content } = Layout
 
@@ -30,6 +31,7 @@ export default class BasicLayout extends Component {
               <Route path='/loan' exact component={LoanList} />
               <Route path='/loan/repayment/:loanId' exact component={Repayment} />
               <Route path='/statis/repayment' exact component={RepaymentStatis} />
+              <Route path='/funds/receipt' exact component={Receipt} />
             </Switch>
           </Content>
         </Layout>

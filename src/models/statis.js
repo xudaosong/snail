@@ -24,7 +24,7 @@ export default {
   // },
 
   effects: {
-    * getRepayment({ payload }, { call, put }) {  // eslint-disable-line
+    * getRepayment({ payload }, { call, put }) {
       const repayment = yield call(getRepayment, payload)
       if (repayment.success) {
         yield put({

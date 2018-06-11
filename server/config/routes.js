@@ -1,6 +1,7 @@
 const platform = require('../controller/platform.controller')
 const loan = require('../controller/loan.controller')
 const statis = require('../controller/statis.controller')
+const receipt = require('../controller/receipt.controller')
 
 module.exports = function (router) {
   router
@@ -13,4 +14,7 @@ module.exports = function (router) {
     .get('/api/v1/loan/repayment', loan.getRepaymentList)
   router
     .get('/api/v1/statis/repayment', statis.getRepayment)
+  router
+    .get('/api/v1/receipt', receipt.getList)
+    .post('/api/v1/receipt', receipt.add)
 }

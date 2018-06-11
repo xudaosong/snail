@@ -53,6 +53,11 @@ export default class SiderMenu extends PureComponent {
               <span>回款统计</span>
             </Link>
           </Menu.Item>
+          <Menu.Item key='/funds/receipt'>
+            <Link to='/funds/receipt'>
+              <span>我要收款</span>
+            </Link>
+          </Menu.Item>
         </Menu>
       </Sider>
     )

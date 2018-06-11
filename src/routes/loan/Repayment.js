@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
 import { Table, Card } from 'antd'
+import { formatCurrency } from '../../utils/currency'
 import moment from 'moment'
 import { routerRedux } from 'dva/router'
 import styles from './loan.less'
@@ -39,7 +40,7 @@ export default class Repayment extends Component {
     dataIndex: 'principal',
     key: 'principal',
     className: styles['text-right'],
-    render: (item) => item.toFixed(2)
+    render: (item) => formatCurrency(item)
   }, {
     title: '标面收益',
     children: [{
@@ -47,13 +48,13 @@ export default class Repayment extends Component {
       dataIndex: 'interest',
       key: 'interest',
       className: styles['text-right'],
-      render: (item) => item.toFixed(2)
+      render: (item) => formatCurrency(item)
     }, {
       title: '管理费',
       dataIndex: 'interestManagementFee',
       key: 'interestManagementFee',
       className: styles['text-right'],
-      render: (item) => item.toFixed(2)
+      render: (item) => formatCurrency(item)
     }]
   }, {
     title: '平台奖励',
@@ -62,13 +63,13 @@ export default class Repayment extends Component {
       dataIndex: 'platformRewardInterest',
       key: 'platformRewardInterest',
       className: styles['text-right'],
-      render: (item) => item.toFixed(2)
+      render: (item) => formatCurrency(item)
     }, {
       title: '管理费',
       dataIndex: 'platformRewardFee',
       key: 'platformRewardFee',
       className: styles['text-right'],
-      render: (item) => item.toFixed(2)
+      render: (item) => formatCurrency(item)
     }]
   }, {
     title: '渠道奖励',
@@ -77,13 +78,13 @@ export default class Repayment extends Component {
       dataIndex: 'channelRewardInterest',
       key: 'channelRewardInterest',
       className: styles['text-right'],
-      render: (item) => item.toFixed(2)
+      render: (item) => formatCurrency(item)
     }, {
       title: '管理费',
       dataIndex: 'channelRewardFee',
       key: 'channelRewardFee',
       className: styles['text-right'],
-      render: (item) => item.toFixed(2)
+      render: (item) => formatCurrency(item)
     }]
   }, {
     title: '小计',
@@ -92,25 +93,25 @@ export default class Repayment extends Component {
       dataIndex: 'totalInterestManagementFee',
       key: 'totalInterestManagementFee',
       className: styles['text-right'],
-      render: (item) => item.toFixed(2)
+      render: (item) => formatCurrency(item)
     }, {
       title: '总还款利息',
       dataIndex: 'totalInterest',
       key: 'totalInterest',
       className: styles['text-right'],
-      render: (item) => item.toFixed(2)
+      render: (item) => formatCurrency(item)
     }, {
       title: '总还款金额',
       dataIndex: 'totalRepayment',
       key: 'totalRepayment',
       className: styles['text-right'],
-      render: (item) => item.toFixed(2)
+      render: (item) => formatCurrency(item)
     }, {
       title: '总应收金额',
       dataIndex: 'amountReceivable',
       key: 'amountReceivable',
       className: styles['text-right'],
-      render: (item) => item.toFixed(2)
+      render: (item) => formatCurrency(item)
     }]
   }]
   componentDidMount() {

@@ -1,16 +1,17 @@
 import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
-import { Form, Input, InputNumber, Select, DatePicker } from 'antd'
+import { Form, Input, InputNumber, Select, DatePicker, Checkbox } from 'antd'
 import _ from 'lodash'
 
 const { TextArea } = Input
 const Option = Select.Option
 const FormItem = Form.Item
+const RangePicker = DatePicker.RangePicker
 
 export default class GenerateFormItem extends Component {
   static propTypes = {
-    options: PropTypes.array,
-    form: PropTypes.object
+    form: PropTypes.object,
+    options: PropTypes.array
   }
   formItemLayout = {
     labelCol: {
@@ -30,49 +31,55 @@ export default class GenerateFormItem extends Component {
       <Fragment>
         {_.map(options, (item) => {
           let element = null
-          switch (item.type) {
+          let { type, name, dataSource, label, defaultValue, required, placeholder, ...rest } = item
+          switch (type) {
             case 'text':
-              element = <Input placeholder={item.placeholder} />
+              element = <Input placeholder={placeholder} />
               break
             case 'textarea':
               element = <TextArea
                 style={{ minHeight: 32 }}
-                placeholder={item.placeholder}
+                placeholder={placeholder}
                 rows={4}
               />
               break
             case 'percent':
               element = (
-                <InputNumber style={{ width: '80%' }} placeholder={item.placeholder} min={0} max={100} />
+                <InputNumber style={{ width: '80%' }} placeholder={placeholder} min={0} max={100} />
               )
               break
             case 'number':
-              element = <InputNumber style={{ width: '100%' }} placeholder={item.placeholder} />
+              element = <InputNumber style={{ width: '100%' }} placeholder={placeholder} />
               break
             case 'select':
               element = (
-                <Select placeholder={item.placeholder}>
-                  {_.map(item.dataSource, (item) => <Option key={item.value} value={item.value}>{item.name}</Option>)}
+                <Select {...rest} placeholder={placeholder}>
+                  {_.map(dataSource, (item) => <Option key={item.value} value={item.value}>{item.name}</Option>)}
                 </Select>
               )
               break
             case 'date':
-              element = <DatePicker style={{ width: '100%' }} placeholder={item.placeholder} />
+              element = <DatePicker style={{ width: '100%' }} placeholder={placeholder} />
+              break
+            case 'rangePicker':
+              element = <RangePicker style={{ width: 230 }} />
+              break
+            case 'checkbox':
+              element = <Checkbox />
               break
           }
           return (
-            <FormItem key={item.name} {...this.formItemLayout} label={item.label}>
-              {getFieldDecorator(item.name, {
-                initialValue: item.defaultValue,
-                rules: [{ required: item.required }]
+            <FormItem key={name} label={label}>
+              {getFieldDecorator(name, {
+                initialValue: defaultValue,
+                rules: [{ required: required }]
               })(
                 element
               )}
-              {item.type === 'percent' && <span className='ant-form-text'>%</span>}
+              {type === 'percent' && <span className='ant-form-text'>%</span>}
             </FormItem>
           )
         })}
-        <FormItem />
       </Fragment>
     )
   }
