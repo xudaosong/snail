@@ -7,4 +7,4 @@ export const RED_ENVELOPE_TYPE = { 1: '投标成功后直接返还', 2: '红包�
 // 利息类型
 export const INTEREST_TYPE = { 1: '等额本息', 2: '365特权加息' }
 // 借款期限单位
-export const TERM_UNIT = { 'month': '月', 'day': '日' }
+export const TERM_UNIT = { 1: '月', 2: '日' }

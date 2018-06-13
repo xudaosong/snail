@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const { response } = require('../utils/require')
 const moment = require('moment')
+const math = require('mathjs')
 const Repayment = mongoose.model('Repayment')
 
 // 在日期范围内按天统计各平台的回款信息和回款小计
@@ -56,11 +57,61 @@ exports.getRepayment = async (ctx, next) => {
     _id: 0,
     repaymentDate: '$_id.repaymentDate',
     platform: '$_id.platform',
-    principal: 1,
-    totalInterest: 1,
-    totalInterestManagementFee: 1,
-    totalRepayment: 1,
-    amountReceivable: 1
+    principal: {
+      $divide: [
+        {
+          $subtract: [
+            { $multiply: ['$principal', 100] },
+            { $mod: [{ $multiply: ['$principal', 100] }, 1] }
+          ]
+        },
+        100
+      ]
+    },
+    totalInterest: {
+      $divide: [
+        {
+          $subtract: [
+            { $multiply: ['$totalInterest', 100] },
+            { $mod: [{ $multiply: ['$totalInterest', 100] }, 1] }
+          ]
+        },
+        100
+      ]
+    },
+    totalInterestManagementFee: {
+      $divide: [
+        {
+          $subtract: [
+            { $multiply: ['$totalInterestManagementFee', 100] },
+            { $mod: [{ $multiply: ['$totalInterestManagementFee', 100] }, 1] }
+          ]
+        },
+        100
+      ]
+    },
+    totalRepayment: {
+      $divide: [
+        {
+          $subtract: [
+            { $multiply: ['$totalRepayment', 100] },
+            { $mod: [{ $multiply: ['$totalRepayment', 100] }, 1] }
+          ]
+        },
+        100
+      ]
+    },
+    amountReceivable: {
+      $divide: [
+        {
+          $subtract: [
+            { $multiply: ['$amountReceivable', 100] },
+            { $mod: [{ $multiply: ['$amountReceivable', 100] }, 1] }
+          ]
+        },
+        100
+      ]
+    }
   }).match(secondMatch).sort({ // 按日期排序
     'repaymentDate': 'asc'
   }).exec().then((data) => {
@@ -79,6 +130,11 @@ exports.getRepayment = async (ctx, next) => {
       content.totalRepayment += data[i].totalRepayment
       content.amountReceivable += data[i].amountReceivable
     }
+    content.principal = parseFloat(math.format(content.principal, { precision: 14 }))
+    content.totalInterest = parseFloat(math.format(content.totalInterest, { precision: 14 }))
+    content.totalInterestManagementFee = parseFloat(math.format(content.totalInterestManagementFee, { precision: 14 }))
+    content.totalRepayment = parseFloat(math.format(content.totalRepayment, { precision: 14 }))
+    content.amountReceivable = parseFloat(math.format(content.amountReceivable, { precision: 14 }))
     // 按还款日期提取分组
     // content.repaymentList = _.groupBy(data, 'repaymentDate')
     content.repaymentList = data

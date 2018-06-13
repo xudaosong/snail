@@ -28,12 +28,15 @@ const RepaymentSchema = new Schema({
     type: Number,
     default: 0,
     required: '请输入应收本金',
+    get: v => math.format(v, { precision: 14 }),
     set: v => math.format(v, { precision: 14 })
   },
   // 应收利息
   interest: {
     type: Number,
+    default: 0,
     required: '请输入应收利息',
+    get: v => math.format(v, { precision: 14 }),
     set: v => math.format(v, { precision: 14 })
   },
   // 平台奖励利息
@@ -41,6 +44,7 @@ const RepaymentSchema = new Schema({
     type: Number,
     default: 0,
     required: '请输入平台奖励利息',
+    get: v => math.format(v, { precision: 14 }),
     set: v => math.format(v, { precision: 14 })
   },
   // 平台奖励利息管理费
@@ -48,6 +52,7 @@ const RepaymentSchema = new Schema({
     type: Number,
     default: 0,
     required: '请输入平台奖励利息管理费',
+    get: v => math.format(v, { precision: 14 }),
     set: v => math.format(v, { precision: 14 })
   },
   // 渠道奖励利息
@@ -55,6 +60,7 @@ const RepaymentSchema = new Schema({
     type: Number,
     default: 0,
     required: '请输入渠道奖励利息',
+    get: v => math.format(v, { precision: 14 }),
     set: v => math.format(v, { precision: 14 })
   },
   // 渠道奖励利息管理费
@@ -62,6 +68,7 @@ const RepaymentSchema = new Schema({
     type: Number,
     default: 0,
     required: '请输入渠道奖励利息管理费',
+    get: v => math.format(v, { precision: 14 }),
     set: v => math.format(v, { precision: 14 })
   },
   // 应还日期
@@ -73,6 +80,7 @@ const RepaymentSchema = new Schema({
   interestManagementFee: {
     type: Number,
     required: '请输入利息管理费',
+    get: v => math.format(v, { precision: 14 }),
     set: v => math.format(v, { precision: 14 })
   },
   // 还款状态
@@ -87,21 +95,25 @@ const RepaymentSchema = new Schema({
   // 总还款利息
   totalInterest: {
     type: Number,
+    get: v => math.format(v, { precision: 14 }),
     set: v => math.format(v, { precision: 14 })
   },
   // 总利息管理费
   totalInterestManagementFee: {
     type: Number,
+    get: v => math.format(v, { precision: 14 }),
     set: v => math.format(v, { precision: 14 })
   },
   // 总还款金额
   totalRepayment: {
     type: Number,
+    get: v => math.format(v, { precision: 14 }),
     set: v => math.format(v, { precision: 14 })
   },
   // 总应收金额
   amountReceivable: {
     type: Number,
+    get: v => math.format(v, { precision: 14 }),
     set: v => math.format(v, { precision: 14 })
   },
   __v: {

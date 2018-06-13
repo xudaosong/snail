@@ -83,10 +83,11 @@ const LoanSchema = new Schema({
     required: '请输入期限'
   },
   // 借款期限单位
+  // 1: 月 2: 日
   termUnit: {
-    type: String,
-    enum: ['month', 'day'],
-    required: '请输入期限'
+    type: Number,
+    min: 1,
+    max: 2
   },
   // 还款方式
   repaymentMode: {
