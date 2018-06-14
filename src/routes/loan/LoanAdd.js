@@ -20,6 +20,12 @@ export default class LoanAdd extends Component {
     dispatch: PropTypes.func,
     platform: PropTypes.array
   }
+  componentDidMount() {
+    const { dispatch } = this.props
+    dispatch({
+      type: 'loan/getPlatform'
+    })
+  }
   getFormItems() {
     const { platform } = this.props
     return [

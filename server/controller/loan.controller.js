@@ -1,6 +1,7 @@
 const moment = require('moment')
 const mongoose = require('mongoose')
 const { response } = require('../utils/require')
+const { floatFixed } = require('../utils')
 const _ = require('lodash')
 const Loan = mongoose.model('Loan')
 const LoanReward = mongoose.model('LoanReward')
@@ -18,11 +19,11 @@ const decimal = function (amount, platform) {
 }
 
 // 按等额本息计算每期应还本金
-const calcPrincipal = function (principal, interestRate, currentTerm, toalTerm, platform) {
-  let monthInterest = interestRate / 12
-  // 每月应还本金=贷款本金×月利率×(1+月利率)^(还款月序号-1)÷〔(1+月利率)^还款月数-1〕
-  return decimal(principal * monthInterest * (1 + monthInterest) ** (currentTerm - 1) / ((1 + monthInterest) ** toalTerm - 1), platform)
-}
+// const calcPrincipal = function (principal, interestRate, currentTerm, toalTerm, platform) {
+//   let monthInterest = interestRate / 12
+//   // 每月应还本金=贷款本金×月利率×(1+月利率)^(还款月序号-1)÷〔(1+月利率)^还款月数-1〕
+//   return decimal(principal * monthInterest * (1 + monthInterest) ** (currentTerm - 1) / ((1 + monthInterest) ** toalTerm - 1), platform)
+// }
 
 // 按等额本息计算每期应还利息
 const calcInterest = function (principal, interestRate, currentTerm, toalTerm, platform) {
@@ -36,12 +37,16 @@ const calcInterest = function (principal, interestRate, currentTerm, toalTerm, p
 // 按等额本息计算每期还款本息
 const calcPrincipalAndInterest = function (principal, interestRate, currentTerm, toalTerm, platform) {
   // 易融恒信的计算规则：利息 = 本息 - 本金（截取2位数）
-  let result = {}
-  let monthInterest = interestRate / 12
-  result.principal = principal * monthInterest * (1 + monthInterest) ** (currentTerm - 1) / ((1 + monthInterest) ** toalTerm - 1)
-  result.amount = principal * monthInterest * (1 + monthInterest) ** toalTerm / ((1 + monthInterest) ** toalTerm - 1)
-  // result.interest = principal
-  // result
+  let monthInterestRate = interestRate / 12
+  let monthAmount = (principal * monthInterestRate * (1 + monthInterestRate) ** toalTerm) / ((1 + monthInterestRate) ** toalTerm - 1)
+  let monthPrincipal = principal * monthInterestRate * (1 + monthInterestRate) ** (currentTerm - 1) / ((1 + monthInterestRate) ** toalTerm - 1)
+  monthAmount = floatFixed(decimal(monthAmount, platform))
+  monthPrincipal = floatFixed(decimal(monthPrincipal, platform))
+  let monthInterest = floatFixed(decimal(monthAmount - monthPrincipal, platform))
+  return {
+    principal: monthPrincipal,
+    interest: monthInterest
+  }
 }
 // 平台加息奖励计算，如广信贷
 const calcRewardInterest = function (principal, originalInterest, bonusInterest, toalTerm, platform) {
@@ -97,8 +102,9 @@ const generateRepayment = function (loan) {
     // 每期还款计算
     for (let i = 1; i <= loan.term; i++) {
       // 标面回款计算
-      let interest = calcInterest(loan.principal, loan.interestRate, i, loan.term, loan.platform)
-      let principal = calcPrincipal(loan.principal, loan.interestRate, i, loan.term, loan.platform)
+      let { principal, interest } = calcPrincipalAndInterest(loan.principal, loan.interestRate, i, loan.term, loan.platform)
+      // let interest = calcInterest(loan.principal, loan.interestRate, i, loan.term, loan.platform)
+      // let principal = calcPrincipal(loan.principal, loan.interestRate, i, loan.term, loan.platform)
       let interestManagementFee = interest * loan.interestManagementFee
       // 平台奖励回款计算
       let platformRewardInterest = everyPlatformRedEnvelope
@@ -150,7 +156,7 @@ const generateRepayment = function (loan) {
         channelRewardInterest,
         channelRewardFee,
         repaymentDate: moment(loan.interestDate).add(i, 'months').format(),
-        status: '待还款',
+        status: 0,
         totalInterest,
         totalInterestManagementFee,
         totalRepayment,
@@ -197,7 +203,7 @@ const generateRepayment = function (loan) {
       channelRewardInterest,
       channelRewardFee,
       repaymentDate: moment(loan.interestDate).add(loan.term, loan.termUnit === 1 ? 'months' : 'days').format(),
-      status: '待还款',
+      status: 0,
       totalInterest,
       totalInterestManagementFee,
       totalRepayment,
@@ -271,7 +277,7 @@ const generateRepayment = function (loan) {
         channelRewardInterest,
         channelRewardFee,
         repaymentDate: moment(loan.interestDate).add(i, 'months').format(),
-        status: '待还款',
+        status: 0,
         totalInterest,
         totalInterestManagementFee,
         totalRepayment,
@@ -283,7 +289,7 @@ const generateRepayment = function (loan) {
 }
 
 exports.getList = async (ctx, next) => {
-  const results = await Loan.getList()
+  const results = await Loan.getList(ctx.request.query)
   ctx.response.body = response(results)
 }
 

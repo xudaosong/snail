@@ -1,12 +1,17 @@
 import request from '../utils/request'
 import { CONTXT_PATH } from '../utils/consts'
+import { convertUrl } from '../utils'
 
 export async function getPlatform() {
   return request(CONTXT_PATH + '/platform')
 }
 
 export async function getLoan(params) {
-  return request(CONTXT_PATH + '/loan')
+  let queryString = convertUrl(params)
+  if (queryString.length > 0) {
+    queryString = '?' + queryString
+  }
+  return request(CONTXT_PATH + '/loan' + queryString)
 }
 
 export async function saveLoan(params) {

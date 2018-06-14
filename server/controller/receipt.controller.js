@@ -14,8 +14,8 @@ exports.getList = async (ctx, next) => {
   } = ctx.request.query
   const results = await Receipt.getList({
     receiptDate: {
-      $gte: startDate,
-      $lte: endDate
+      $gte: new Date(startDate),
+      $lte: new Date(endDate)
     }
   })
   ctx.response.body = response(results)
@@ -37,10 +37,9 @@ exports.add = async (ctx, next) => {
           loan: { $in: loans }
         }).updateMany({}, {
           $set: {
-            status: '已还款'
+            status: 1
           }
         }).then((result) => {
-          console.log(result)
           return result
         })
       })

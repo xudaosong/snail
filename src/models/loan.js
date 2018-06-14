@@ -1,30 +1,12 @@
 import { getPlatform, saveLoan, getLoan, getRepayment } from '../services/loan'
 
 export default {
-
   namespace: 'loan',
-
   state: {
     platform: [],
     loanList: [],
     repaymentList: []
   },
-
-  subscriptions: {
-    setup({ dispatch, history }) {
-      return history.listen(({ pathname }) => {
-        switch (pathname) {
-          case '/loan/add':
-            dispatch({ type: 'getPlatform' })
-            break
-          case '/loan':
-            dispatch({ type: 'getLoanList' })
-            break
-        }
-      })
-    }
-  },
-
   effects: {
     * getPlatform({ payload }, { call, put }) {  // eslint-disable-line
       const platform = yield call(getPlatform)
@@ -38,7 +20,7 @@ export default {
       }
     },
     * getLoanList({ payload }, { call, put }) {  // eslint-disable-line
-      const loanList = yield call(getLoan)
+      const loanList = yield call(getLoan, payload)
       if (loanList.success) {
         yield put({
           type: 'save',
@@ -63,11 +45,9 @@ export default {
       }
     }
   },
-
   reducers: {
     save(state, action) {
       return { ...state, ...action.payload }
     }
   }
-
 }

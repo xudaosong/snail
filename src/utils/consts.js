@@ -8,3 +8,5 @@ export const RED_ENVELOPE_TYPE = { 1: '投标成功后直接返还', 2: '红包�
 export const INTEREST_TYPE = { 1: '等额本息', 2: '365特权加息' }
 // 借款期限单位
 export const TERM_UNIT = { 1: '月', 2: '日' }
+// 还款状态
+export const REPAYMENT_STATUS = { 0: '待还款', 1: '已还款', 2: '逾期', 3: '坏账' }

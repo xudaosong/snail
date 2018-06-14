@@ -5,12 +5,12 @@ export default {
   namespace: 'funds',
 
   state: {
-    receipt: []
+    receipt: {}
   },
 
   effects: {
     * getReceipt({ payload }, { call, put }) {  // eslint-disable-line
-      const result = yield call(getReceipt)
+      const result = yield call(getReceipt, payload)
       if (result.success) {
         yield put({
           type: 'save',

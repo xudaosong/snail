@@ -127,9 +127,12 @@ LoanSchema.method('toJSON', function () {
   return obj
 })
 
-LoanSchema.statics.getList = async function () {
+LoanSchema.statics.getList = async function (option = {}) {
   let results = []
-  await this.find()
+  if (option.name) {
+    option.name = new RegExp(option.name)
+  }
+  await this.find(option)
     .sort({ platform: 'asc', interestDate: 'desc' })
     .then(function (doc) {
       results = doc

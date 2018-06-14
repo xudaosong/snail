@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const { floatFixed } = require('../utils')
 const Schema = mongoose.Schema
 
 const ReceiptSchema = new Schema({
@@ -53,14 +54,30 @@ ReceiptSchema.method('toJSON', function () {
 })
 
 ReceiptSchema.statics.getList = async function (option = {}) {
-  let results = []
+  let results = {
+    fee: 0,
+    principal: 0,
+    interest: 0,
+    amount: 0
+  }
   await this.find(option)
     .sort({ receiptDate: 'asc', platform: 'asc' })
     .then(function (doc) {
-      results = doc
+      doc.forEach((item) => {
+        results.fee += item.fee
+        results.principal += item.principal
+        results.interest += item.interest
+        results.amount += item.amount
+      })
+      results.assets = doc
+      results.fee = floatFixed(results.fee)
+      results.principal = floatFixed(results.principal)
+      results.interest = floatFixed(results.interest)
+      results.amount = floatFixed(results.amount)
     }).catch(function (err) {
       results = err
     })
+
   return results
 }
 

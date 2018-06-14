@@ -16,3 +16,57 @@
 .text-right {
     text-align: right !important;
 }
+
+.tableListForm {
+    >div {
+        float: right
+    }
+    &:after {
+        display: block;
+        clear: both;
+        content: "";
+        visibility: hidden;
+        height: 0
+    }
+    :global {
+        .ant-form-item {
+            margin-bottom: 24px;
+            margin-right: 0;
+            display: flex;
+            >.ant-form-item-label {
+                width: auto;
+                line-height: 32px;
+                padding-right: 4px;
+            }
+            >.ant-form-item-label label:after {
+                margin: 0;
+            }
+            .ant-form-item-control {
+                line-height: 32px;
+            }
+        }
+        .ant-form-item-control-wrapper {
+            flex: 1;
+        }
+    }
+    .submitButtons {
+        white-space: nowrap;
+        margin-bottom: 24px;
+    }
+    .searchForm {
+        float: left;
+        >div {
+            float: left;
+            &:not(:first-child) {
+                padding-left: 10px
+            }
+        }
+        &:after {
+            display: block;
+            clear: both;
+            content: "";
+            visibility: hidden;
+            height: 0
+        }
+    }
+}

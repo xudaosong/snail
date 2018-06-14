@@ -12,9 +12,9 @@ const RadioButton = Radio.Button
 const RadioGroup = Radio.Group
 
 @connect(({ statis, loan, funds }) => {
-  const { repayment = [] } = statis
   const { platform = [] } = loan
-  const { receipt = [] } = funds
+  const { repayment = {} } = statis
+  const { receipt = {} } = funds
   return {
     platform,
     repayment,
@@ -22,17 +22,21 @@ const RadioGroup = Radio.Group
   }
 })
 @Form.create()
-export default class Repayment extends Component {
+export default class Receipt extends Component {
   static propTypes = {
     form: PropTypes.object,
     dispatch: PropTypes.func,
+    platform: PropTypes.array,
     repayment: PropTypes.object,
-    receipt: PropTypes.array,
-    platform: PropTypes.array
+    receipt: PropTypes.object
   }
   state = {
     showMode: 'platform',
     showReceived: false,
+    searchForm: {
+      startDate: moment().startOf('month').format('YYYY-MM-DD'),
+      endDate: moment().format('YYYY-MM-DD')
+    },
     repayment: {},
     receipt: {}
   }
@@ -41,13 +45,20 @@ export default class Repayment extends Component {
     dispatch({
       type: 'loan/getPlatform'
     })
+    this.getRepaymentAndReceipt()
+  }
+  getRepaymentAndReceipt = () => {
+    const { dispatch } = this.props
+    const { searchForm } = this.state
     dispatch({
-      type: 'funds/getReceipt'
+      type: 'funds/getReceipt',
+      payload: searchForm
     })
     dispatch({
       type: 'statis/getRepayment',
       payload: {
-        status: '待还款'
+        ...searchForm,
+        status: 0
       }
     })
   }
@@ -80,12 +91,17 @@ export default class Repayment extends Component {
         name: 'dateRange',
         type: 'rangePicker',
         label: '日期',
-        defaultValue: [moment().startOf('month'), moment().endOf('month')]
+        defaultValue: [moment().startOf('month'), moment()]
       }
     ]
   }
-  handleReceipt(items) {
+  handleReceipt(data) {
     const { dispatch } = this.props
+    // 过滤出待还款的数据项
+    let items = _.filter(data, (o) => o.status !== 1)
+    if (items.length === 0) {
+      return
+    }
     const payload = _.map(items, (item) => {
       return {
         'platform': item.platform,
@@ -99,23 +115,7 @@ export default class Repayment extends Component {
     dispatch({
       type: 'funds/saveReceipt',
       payload
-    }).then(() => {
-      const { showReceived } = this.state
-      if (showReceived) {
-        dispatch({
-          type: 'funds/getReceipt',
-          payload: {
-            status: '待还款'
-          }
-        })
-      }
-      dispatch({
-        type: 'statis/getRepayment',
-        payload: {
-          status: '待还款'
-        }
-      })
-    })
+    }).then(this.getRepaymentAndReceipt)
   }
   handleValueChange(name, item, value) {
     switch (name) {
@@ -143,7 +143,7 @@ export default class Repayment extends Component {
   handleSubmit = (e) => {
     e.preventDefault()
 
-    const { dispatch, form } = this.props
+    const { form } = this.props
 
     form.validateFields((err, fieldsValue) => {
       if (err) return
@@ -155,20 +155,11 @@ export default class Repayment extends Component {
         values.startDate = fieldsValue['dateRange'][0].format('YYYY-MM-DD')
         values.endDate = fieldsValue['dateRange'][1].format('YYYY-MM-DD')
       }
-      dispatch({
-        type: 'statis/getRepayment',
-        payload: {
-          ...values,
-          status: '待还款'
-        }
-      })
+      this.setState({ searchForm: values }, this.getRepaymentAndReceipt)
     })
   }
   handleShowReceived = (e) => {
-    e.preventDefault()
     this.setState({ showReceived: e.target.checked })
-    // console.log(e.target.checked)
-    // TODO: 显示已收款
   }
   renderRow(repaymentList, receiptList, showMode) {
     const { showReceived } = this.state
@@ -200,6 +191,7 @@ export default class Repayment extends Component {
       let interestTotal = 0
       let amountTotal = 0
       let feeTotal = 0
+      let hasReceipt = false
       _.map(repaymentGroup[key], (item, index) => {
         principalTotal += item.principal
         interestTotal += item.totalInterest
@@ -219,6 +211,7 @@ export default class Repayment extends Component {
             </tr>
           )
         } else {
+          hasReceipt = true
           dom.push(
             <tr key={item.repaymentDate + item.platform}>
               {index === 0 && <td rowSpan={repaymentGroup[key].length > 1 ? repaymentGroup[key].length + 1 : 1}>{item[showMode]}</td>}
@@ -240,7 +233,7 @@ export default class Repayment extends Component {
             <td className={styles['right']}>{formatCurrency(interestTotal)}</td>
             <td className={styles['right']}>{formatCurrency(feeTotal)}</td>
             <td className={styles['right']}>{formatCurrency(amountTotal)}</td>
-            <td className={styles['center']}><Button type='primary' onClick={() => this.handleReceipt(repaymentGroup[key])}>全部收款</Button></td>
+            <td className={styles['center']}>{hasReceipt ? <Button type='primary' onClick={() => this.handleReceipt(repaymentGroup[key])}>全部收款</Button> : '全部已收款'}</td>
           </tr>
         )
       }
@@ -261,7 +254,7 @@ export default class Repayment extends Component {
             </div>
           </Form>
           <div>
-            <Checkbox onChange={this.handleShowReceived}>显示已收款</Checkbox>
+            <Checkbox checked={this.state.showReceived} onChange={this.handleShowReceived}>显示已收款</Checkbox>
             <RadioGroup onChange={(e) => this.setState({ showMode: e.target.value })} defaultValue={showMode}>
               <RadioButton value='date'><Icon type='calendar' /></RadioButton>
               <RadioButton value='platform'><Icon type='appstore-o' /></RadioButton>
@@ -270,20 +263,20 @@ export default class Repayment extends Component {
         </div>
         <Row style={{ marginBottom: 15 }} type='flex' justify='space-between'>
           <Col span={4}>
-            <div className={styles['title']}>实收本金</div>
-            <div className={styles['money']}>{repayment.principal && formatCurrency(repayment.principal)}</div>
+            <div className={styles['title']}>已收本金</div>
+            <div className={styles['money']}>{receipt.principal && formatCurrency(receipt.principal)}</div>
           </Col>
           <Col span={4}>
-            <div className={styles['title']}>实收利息</div>
-            <div className={styles['money']}>{repayment.totalInterest && formatCurrency(repayment.totalInterest)}</div>
+            <div className={styles['title']}>已收利息</div>
+            <div className={styles['money']}>{receipt.interest && formatCurrency(receipt.interest)}</div>
           </Col>
           <Col span={4}>
-            <div className={styles['title']}>实付费用</div>
-            <div className={styles['money']}>{repayment.totalInterestManagementFee && formatCurrency(repayment.totalInterestManagementFee)}</div>
+            <div className={styles['title']}>已付费用</div>
+            <div className={styles['money']}>{receipt.fee && formatCurrency(receipt.fee)}</div>
           </Col>
           <Col span={4}>
-            <div className={styles['title']}>实收净额</div>
-            <div className={styles['money']}>{repayment.totalRepayment && formatCurrency(repayment.amountReceivable)}</div>
+            <div className={styles['title']}>已收净额</div>
+            <div className={styles['money']}>{receipt.amount && formatCurrency(receipt.amount)}</div>
           </Col>
         </Row>
         <table className={styles['table']}>
@@ -299,7 +292,7 @@ export default class Repayment extends Component {
             </tr>
           </thead>
           <tbody>
-            {this.renderRow(repaymentList, receipt, showMode)}
+            {this.renderRow(repaymentList, receipt.assets, showMode)}
           </tbody>
         </table>
       </Card>
