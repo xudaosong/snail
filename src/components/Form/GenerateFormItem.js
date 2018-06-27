@@ -31,7 +31,7 @@ export default class GenerateFormItem extends Component {
       <Fragment>
         {_.map(options, (item) => {
           let element = null
-          let { type, name, dataSource, label, defaultValue, required, placeholder, ...rest } = item
+          let { type, name, dataSource, label, defaultValue, required, placeholder, onChange = () => { }, ...rest } = item
           switch (type) {
             case 'text':
               element = <Input placeholder={placeholder} />
@@ -53,7 +53,7 @@ export default class GenerateFormItem extends Component {
               break
             case 'select':
               element = (
-                <Select {...rest} placeholder={placeholder}>
+                <Select dropdownMatchSelectWidth={false} {...rest} placeholder={placeholder} onChange={onChange}>
                   {_.map(dataSource, (item) => <Option key={item.value} value={item.value}>{item.name}</Option>)}
                 </Select>
               )

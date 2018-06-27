@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
-const { floatFixed } = require('../utils')
+const Decimal = require('../utils/decimal')
 const ObjectId = require('mongodb').ObjectId
+const moment = require('moment')
 const Schema = mongoose.Schema
 
 const RepaymentSchema = new Schema({
@@ -28,60 +29,54 @@ const RepaymentSchema = new Schema({
     type: Number,
     default: 0,
     required: '请输入应收本金',
-    get: v => floatFixed(v),
-    set: v => floatFixed(v)
+    set: v => Decimal.isDecimal(v) ? v.toNumber() : v
   },
   // 应收利息
   interest: {
     type: Number,
     default: 0,
     required: '请输入应收利息',
-    get: v => floatFixed(v),
-    set: v => floatFixed(v)
+    set: v => Decimal.isDecimal(v) ? v.toNumber() : v
   },
   // 平台奖励利息
   platformRewardInterest: {
     type: Number,
     default: 0,
     required: '请输入平台奖励利息',
-    get: v => floatFixed(v),
-    set: v => floatFixed(v)
+    set: v => Decimal.isDecimal(v) ? v.toNumber() : v
   },
   // 平台奖励利息管理费
   platformRewardFee: {
     type: Number,
     default: 0,
     required: '请输入平台奖励利息管理费',
-    get: v => floatFixed(v),
-    set: v => floatFixed(v)
+    set: v => Decimal.isDecimal(v) ? v.toNumber() : v
   },
   // 渠道奖励利息
   channelRewardInterest: {
     type: Number,
     default: 0,
     required: '请输入渠道奖励利息',
-    get: v => floatFixed(v),
-    set: v => floatFixed(v)
+    set: v => Decimal.isDecimal(v) ? v.toNumber() : v
   },
   // 渠道奖励利息管理费
   channelRewardFee: {
     type: Number,
     default: 0,
     required: '请输入渠道奖励利息管理费',
-    get: v => floatFixed(v),
-    set: v => floatFixed(v)
+    set: v => Decimal.isDecimal(v) ? v.toNumber() : v
   },
   // 应还日期
   repaymentDate: {
     type: Date,
-    required: '请输入应还日期'
+    required: '请输入应还日期',
+    get: v => moment(v).format('YYYY-MM-DD')
   },
   // 利息管理费
   interestManagementFee: {
     type: Number,
     required: '请输入利息管理费',
-    get: v => floatFixed(v),
-    set: v => floatFixed(v)
+    set: v => Decimal.isDecimal(v) ? v.toNumber() : v
   },
   // 还款状态
   // 0:'待还款', 1:'已还款', 2:'逾期', 3:'坏账'
@@ -95,26 +90,22 @@ const RepaymentSchema = new Schema({
   // 总还款利息
   totalInterest: {
     type: Number,
-    get: v => floatFixed(v),
-    set: v => floatFixed(v)
+    set: v => Decimal.isDecimal(v) ? v.toNumber() : v
   },
   // 总利息管理费
   totalInterestManagementFee: {
     type: Number,
-    get: v => floatFixed(v),
-    set: v => floatFixed(v)
+    set: v => Decimal.isDecimal(v) ? v.toNumber() : v
   },
   // 总还款金额
   totalRepayment: {
     type: Number,
-    get: v => floatFixed(v),
-    set: v => floatFixed(v)
+    set: v => Decimal.isDecimal(v) ? v.toNumber() : v
   },
   // 总应收金额
   amountReceivable: {
     type: Number,
-    get: v => floatFixed(v),
-    set: v => floatFixed(v)
+    set: v => Decimal.isDecimal(v) ? v.toNumber() : v
   },
   __v: {
     type: Number,

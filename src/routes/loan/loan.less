@@ -1,7 +1,7 @@
 :global {
     .ant-table-thead>tr>th,
     .ant-table-tbody>tr>td {
-        padding: 8px;
+        padding: 8px !important;
     }
 }
 
@@ -67,6 +67,19 @@
             content: "";
             visibility: hidden;
             height: 0
+        }
+    }
+}
+
+.formitem-float {
+    position: relative;
+    :global {
+        .ant-form-item {
+            float: left;
+            &:not(:first-child) {
+                top: 29px;
+                left: 5px;
+            }
         }
     }
 }

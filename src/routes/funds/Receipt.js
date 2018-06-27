@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import moment from 'moment'
 import { connect } from 'dva'
 import { Form, Radio, Icon, Row, Col, Card, InputNumber, Button, Checkbox } from 'antd'
-import { formatCurrency } from '../../utils/currency'
+import { formatCurrency, floatFixed } from '../../utils/currency'
 import { GenerateFormItem } from '../../components/Form'
 import styles from './funds.less'
 import _ from 'lodash'
@@ -121,19 +121,19 @@ export default class Receipt extends Component {
     switch (name) {
       case 'principal':
         item.principal = value
-        item.amountReceivable = item.principal + item.totalInterest - item.totalInterestManagementFee
+        item.amountReceivable = floatFixed(item.principal + item.totalInterest - item.totalInterestManagementFee)
         break
       case 'totalInterest':
         item.totalInterest = value
-        item.amountReceivable = item.principal + item.totalInterest - item.totalInterestManagementFee
+        item.amountReceivable = floatFixed(item.principal + item.totalInterest - item.totalInterestManagementFee)
         break
       case 'amountReceivable':
         item.amountReceivable = value
-        item.totalInterest = item.amountReceivable - item.principal - item.totalInterestManagementFee
+        item.totalInterest = floatFixed(item.amountReceivable - item.principal - item.totalInterestManagementFee)
         break
       case 'totalInterestManagementFee':
         item.totalInterestManagementFee = value
-        item.amountReceivable = item.principal + item.totalInterest - item.totalInterestManagementFee
+        item.amountReceivable = floatFixed(item.principal + item.totalInterest - item.totalInterestManagementFee)
         break
     }
     let { repayment } = this.state
@@ -216,10 +216,10 @@ export default class Receipt extends Component {
             <tr key={item.repaymentDate + item.platform}>
               {index === 0 && <td rowSpan={repaymentGroup[key].length > 1 ? repaymentGroup[key].length + 1 : 1}>{item[showMode]}</td>}
               <td>{showMode === 'repaymentDate' ? item.platform : item.repaymentDate}</td>
-              <td className={styles['right']}><InputNumber value={item.principal.toFixed(2)} defaultValue={item.principal.toFixed(2)} onChange={(e) => this.handleValueChange('principal', item, e)} /></td>
-              <td className={styles['right']}><InputNumber value={item.totalInterest.toFixed(2)} defaultValue={item.totalInterest.toFixed(2)} onChange={(e) => this.handleValueChange('totalInterest', item, e)} /></td>
-              <td className={styles['right']}><InputNumber value={item.totalInterestManagementFee.toFixed(2)} defaultValue={item.totalInterestManagementFee.toFixed(2)} onChange={(e) => this.handleValueChange('totalInterestManagementFee', item, e)} /></td>
-              <td className={styles['right']}><InputNumber value={item.amountReceivable.toFixed(2)} defaultValue={item.amountReceivable.toFixed(2)} onChange={(e) => this.handleValueChange('amountReceivable', item, e)} /></td>
+              <td className={styles['right']}><InputNumber value={item.principal} defaultValue={item.principal} onChange={(e) => this.handleValueChange('principal', item, e)} /></td>
+              <td className={styles['right']}><InputNumber value={item.totalInterest} defaultValue={item.totalInterest} onChange={(e) => this.handleValueChange('totalInterest', item, e)} /></td>
+              <td className={styles['right']}><InputNumber value={item.totalInterestManagementFee} defaultValue={item.totalInterestManagementFee} onChange={(e) => this.handleValueChange('totalInterestManagementFee', item, e)} /></td>
+              <td className={styles['right']}><InputNumber value={item.amountReceivable} defaultValue={item.amountReceivable} onChange={(e) => this.handleValueChange('amountReceivable', item, e)} /></td>
               <td className={styles['center']}><Button type='primary' onClick={() => this.handleReceipt([item])}>收款</Button></td>
             </tr>
           )
@@ -282,8 +282,8 @@ export default class Receipt extends Component {
         <table className={styles['table']}>
           <thead>
             <tr>
-              <th>收款平台</th>
-              <th>收款日期</th>
+              <th width='100px'>收款平台</th>
+              <th width='120px'>收款日期</th>
               <th className={styles['right']}>实收本金</th>
               <th className={styles['right']}>实收利息</th>
               <th className={styles['right']}>实付费用</th>
