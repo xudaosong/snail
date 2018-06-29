@@ -229,3 +229,31 @@ exports.getPortfolio = async (ctx, next) => {
   }).exec()
   ctx.response.body = response(results)
 }
+
+// 汇总数据
+exports.summary = async (ctx, next) => {
+  // 设置默认为日期范围为当月
+  let {
+    startDate = null,
+    endDate = null,
+    platform = null
+  } = ctx.request.query
+  let match = {}
+  // 如果不设置开始和结束时间，则默认为所有未还款的本金
+  if (startDate === null && endDate === null) {
+    match.status = 0
+  } else {
+    // 按日期过滤数据
+    match.repaymentDate = {}
+    if (startDate !== null) {
+      match.repaymentDate.$gte = new Date(startDate)
+    }
+    if (endDate !== null) {
+      match.repaymentDate.$lt = new Date(moment(endDate).endOf('day'))
+    }
+  }
+  // 按平台过滤数据
+  if (platform !== null) {
+    match.platform = platform
+  }
+}

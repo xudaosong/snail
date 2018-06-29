@@ -12,6 +12,7 @@
   "dependencies": {
     "antd": "^3.5.2",
     "dva": "^2.2.3",
+    "echarts": "^4.1.0",
     "koa": "^2.5.1",
     "koa-bodyparser": "^4.2.0",
     "koa-router": "^7.4.0",

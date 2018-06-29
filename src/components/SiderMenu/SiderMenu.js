@@ -38,6 +38,11 @@ export default class SiderMenu extends PureComponent {
           mode='inline'
           selectedKeys={[pathname]}
         >
+          <Menu.Item key='/'>
+            <Link to='/'>
+              <span>账本</span>
+            </Link>
+          </Menu.Item>
           <Menu.Item key='/loan/add'>
             <Link to='/loan/add'>
               <span>记一笔</span>
@@ -56,6 +61,11 @@ export default class SiderMenu extends PureComponent {
           <Menu.Item key='/funds/receipt'>
             <Link to='/funds/receipt'>
               <span>我要收款</span>
+            </Link>
+          </Menu.Item>
+          <Menu.Item key='/statis/cashflow'>
+            <Link to='/statis/cashflow'>
+              <span>现金流</span>
             </Link>
           </Menu.Item>
         </Menu>

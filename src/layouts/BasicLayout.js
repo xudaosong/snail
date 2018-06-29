@@ -10,6 +10,8 @@ import LoanList from '../routes/loan/LoanList'
 import Repayment from '../routes/loan/Repayment'
 import RepaymentStatis from '../routes/statis/RepaymentStatis'
 import Receipt from '../routes/funds/Receipt'
+import CashFlow from '../routes/statis/CashFlow'
+import Home from '../routes/Home'
 
 const { Header, Content } = Layout
 
@@ -26,12 +28,13 @@ export default class BasicLayout extends Component {
           <Header>Header</Header>
           <Content>
             <Switch>
-              <Route path='/' exact component={IndexPage} />
+              <Route path='/' exact component={Home} />
               <Route path='/loan/add' exact component={LoanAdd} />
               <Route path='/loan' exact component={LoanList} />
               <Route path='/loan/repayment/:loanId' exact component={Repayment} />
               <Route path='/statis/repayment' exact component={RepaymentStatis} />
               <Route path='/funds/receipt' exact component={Receipt} />
+              <Route path='/statis/cashflow' exact component={CashFlow} />
             </Switch>
           </Content>
         </Layout>

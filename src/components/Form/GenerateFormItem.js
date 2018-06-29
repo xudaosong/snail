@@ -62,7 +62,7 @@ export default class GenerateFormItem extends Component {
               element = <DatePicker style={{ width: '100%' }} placeholder={placeholder} />
               break
             case 'rangePicker':
-              element = <RangePicker style={{ width: 230 }} />
+              element = <RangePicker style={{ width: 230 }} {...rest} />
               break
             case 'checkbox':
               element = <Checkbox />

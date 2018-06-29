@@ -238,6 +238,13 @@ export default class Receipt extends Component {
         )
       }
     }
+    if (dom.length === 0) {
+      dom.push(
+        <tr key='nodata'>
+          <td className={styles['nodata']} colSpan={7}>暂无数据</td>
+        </tr>
+      )
+    }
     return dom
   }
   render() {
@@ -261,6 +268,24 @@ export default class Receipt extends Component {
             </RadioGroup>
           </div>
         </div>
+        <Row style={{ marginBottom: 15 }} type='flex' justify='space-between'>
+          <Col span={4}>
+            <div className={styles['title']}>待收本金</div>
+            <div className={styles['money']}>{repayment.principal && formatCurrency(repayment.principal)}</div>
+          </Col>
+          <Col span={4}>
+            <div className={styles['title']}>待收利息</div>
+            <div className={styles['money']}>{repayment.totalInterest && formatCurrency(repayment.totalInterest)}</div>
+          </Col>
+          <Col span={4}>
+            <div className={styles['title']}>待付费用</div>
+            <div className={styles['money']}>{repayment.totalInterestManagementFee && formatCurrency(repayment.totalInterestManagementFee)}</div>
+          </Col>
+          <Col span={4}>
+            <div className={styles['title']}>待收净额</div>
+            <div className={styles['money']}>{repayment.amountReceivable && formatCurrency(repayment.amountReceivable)}</div>
+          </Col>
+        </Row>
         <Row style={{ marginBottom: 15 }} type='flex' justify='space-between'>
           <Col span={4}>
             <div className={styles['title']}>已收本金</div>

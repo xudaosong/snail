@@ -1,27 +1,14 @@
-import { getRepayment } from '../services/statis'
+import { getRepayment, getCashFlow, getPortfolio } from '../services/statis'
 
 export default {
 
   namespace: 'statis',
 
   state: {
-    repayment: {}
+    repayment: {},
+    portfolio: [],
+    cashflow: []
   },
-
-  // subscriptions: {
-  //   setup({ dispatch, history }) {
-  //     return history.listen(({ pathname }) => {
-  //       switch (pathname) {
-  //         case '/loan/add':
-  //           dispatch({ type: 'getPlatform' })
-  //           break
-  //         case '/loan':
-  //           dispatch({ type: 'getLoanList' })
-  //           break
-  //       }
-  //     })
-  //   }
-  // },
 
   effects: {
     * getRepayment({ payload }, { call, put }) {
@@ -31,6 +18,28 @@ export default {
           type: 'save',
           payload: {
             repayment: repayment.content || []
+          }
+        })
+      }
+    },
+    * getCashFlow({ payload }, { call, put }) {
+      const response = yield call(getCashFlow, payload)
+      if (response.success) {
+        yield put({
+          type: 'save',
+          payload: {
+            cashflow: response.content || []
+          }
+        })
+      }
+    },
+    * getPortfolio({ payload }, { call, put }) {
+      const response = yield call(getPortfolio, payload)
+      if (response.success) {
+        yield put({
+          type: 'save',
+          payload: {
+            portfolio: response.content || []
           }
         })
       }
