@@ -11,7 +11,7 @@ import _ from 'lodash'
 const RadioButton = Radio.Button
 const RadioGroup = Radio.Group
 const FormItem = Form.Item
-const RangePicker = DatePicker.RangePicker
+const MonthPicker = DatePicker.MonthPicker
 
 @connect(({ statis, loan }) => {
   const { cashflow = {} } = statis
@@ -30,7 +30,9 @@ export default class CashFlow extends Component {
     platform: PropTypes.array
   }
   state = {
-    showMode: 'date'
+    showMode: 'date',
+    startMonth: moment(),
+    endMonth: moment()
   }
   componentDidMount() {
     const { dispatch } = this.props
@@ -62,9 +64,22 @@ export default class CashFlow extends Component {
       }
     ]
   }
-  handlePanelChange = (value, mode) => {
-    const { form } = this.props
-    form.setFieldsValue({ monthRange: value })
+  disabledStartDate = (startMonth) => {
+    const endMonth = this.state.endMonth
+    if (!startMonth || !endMonth) {
+      return false
+    }
+    return startMonth.valueOf() > endMonth.valueOf()
+  }
+  disabledEndDate = (endMonth) => {
+    const startMonth = this.state.startMonth
+    if (!endMonth || !startMonth) {
+      return false
+    }
+    return endMonth.valueOf() <= startMonth.valueOf()
+  }
+  handleMonthChange = (name, value) => {
+    this.setState({ [name]: value })
   }
   handleSubmit = (e) => {
     e.preventDefault()
@@ -77,8 +92,8 @@ export default class CashFlow extends Component {
       if (fieldsValue['platform'] !== 'all') {
         values['platform'] = fieldsValue['platform']
       }
-      values.startMonth = fieldsValue['monthRange'][0].format('YYYY-MM')
-      values.endMonth = fieldsValue['monthRange'][1].format('YYYY-MM')
+      values.startMonth = fieldsValue['startMonth'].format('YYYY-MM')
+      values.endMonth = fieldsValue['endMonth'].format('YYYY-MM')
       dispatch({
         type: 'statis/getCashFlow',
         payload: values
@@ -137,11 +152,28 @@ export default class CashFlow extends Component {
         <div className={styles['tableListForm']}>
           <Form className={styles['searchForm']} layout='inline' onSubmit={this.handleSubmit}>
             <GenerateFormItem form={this.props.form} options={this.getFormItems()} />
-            <FormItem key={'monthRange'} label='日期'>
-              {getFieldDecorator('monthRange', {
-                initialValue: [moment(), moment()]
+            <FormItem key={'startMonth'} label='日期'>
+              {getFieldDecorator('startMonth', {
+                initialValue: this.state.startMonth
               })(
-                <RangePicker style={{ width: 230 }} mode={['month', 'month']} format='YYYY-MM' onPanelChange={this.handlePanelChange} />
+                <MonthPicker
+                  style={{ width: 120 }}
+                  placeholder='起始月份'
+                  disabledDate={this.disabledStartDate}
+                  onChange={(value) => this.handleMonthChange('startMonth', value)}
+                />
+              )}
+            </FormItem>
+            <FormItem key={'endMonth'}>
+              {getFieldDecorator('endMonth', {
+                initialValue: this.state.endMonth
+              })(
+                <MonthPicker
+                  style={{ width: 120 }}
+                  placeholder='截止月份'
+                  disabledDate={this.disabledEndDate}
+                  onChange={(value) => this.handleMonthChange('endMonth', value)}
+                />
               )}
             </FormItem>
             <div className={styles.submitButtons}>

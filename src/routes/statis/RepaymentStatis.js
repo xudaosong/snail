@@ -160,19 +160,19 @@ export default class RepaymentStatis extends Component {
           </Col>
           <Col span={4}>
             <div className={styles['title']}>应收利息</div>
-            <div className={styles['money']}>{repayment.principal && formatCurrency(repayment.totalInterest)}</div>
+            <div className={styles['money']}>{repayment.totalInterest && formatCurrency(repayment.totalInterest)}</div>
           </Col>
           <Col span={4}>
             <div className={styles['title']}>应收还款</div>
-            <div className={styles['money']}>{repayment.principal && formatCurrency(repayment.totalRepayment)}</div>
+            <div className={styles['money']}>{repayment.totalRepayment && formatCurrency(repayment.totalRepayment)}</div>
           </Col>
           <Col span={4}>
             <div className={styles['title']}>利息管理费</div>
-            <div className={styles['money']}>{repayment.principal && formatCurrency(repayment.totalInterestManagementFee)}</div>
+            <div className={styles['money']}>{repayment.totalInterestManagementFee && formatCurrency(repayment.totalInterestManagementFee)}</div>
           </Col>
           <Col span={4}>
             <div className={styles['title']}>应收净额</div>
-            <div className={styles['money']}>{repayment.principal && formatCurrency(repayment.amountReceivable)}</div>
+            <div className={styles['money']}>{repayment.amountReceivable && formatCurrency(repayment.amountReceivable)}</div>
           </Col>
         </Row>
         <table className={styles['table']}>

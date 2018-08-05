@@ -97,6 +97,15 @@ const LoanSchema = new Schema({
     min: 1,
     max: 3
   },
+  // 状态
+  status: {
+    type: Number,
+    default: 1,
+    required: '请输入当前状态',
+    // 1: '还款中', 2: '已完成', 3: '提前还款'
+    min: 1,
+    max: 3
+  },
   // 利息管理费
   interestManagementFee: {
     type: Number,
@@ -133,7 +142,7 @@ LoanSchema.statics.getList = async function (option = {}) {
     option.name = new RegExp(option.name)
   }
   await this.find(option)
-    .sort({ platform: 'asc', interestDate: 'desc' })
+    .sort({ interestDate: 'desc' })
     .then(function (doc) {
       results = doc
     }).catch(function (err) {

@@ -1,11 +1,11 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'dva'
-import { Table, Card, Form, Button } from 'antd'
+import { Table, Card, Form, Button, Popconfirm } from 'antd'
 import moment from 'moment'
 import { routerRedux, Link } from 'dva/router'
 import { GenerateFormItem } from '../../components/Form'
-import { TERM_UNIT, REPAYMENT_MODE } from '../../utils/consts'
+import { TERM_UNIT, REPAYMENT_MODE, LOAN_STATUS } from '../../utils/consts'
 import { formatCurrency } from '../../utils/currency'
 import styles from './loan.less'
 import _ from 'lodash'
@@ -77,6 +77,12 @@ export default class LoanList extends Component {
     align: 'right',
     render: (v) => REPAYMENT_MODE[v]
   }, {
+    title: '状态',
+    dataIndex: 'status',
+    key: 'status',
+    align: 'right',
+    render: (v) => LOAN_STATUS[v]
+  }, {
     title: '备注',
     dataIndex: 'remark',
     key: 'remark',
@@ -84,7 +90,16 @@ export default class LoanList extends Component {
   }, {
     key: 'operate',
     align: 'right',
-    render: (v, record) => <Link to={`/loan/repayment/${record.id}`}>还款详情</Link>
+    width: 180,
+    render: (v, record) => (
+      <Fragment>
+        <Link style={{ paddingRight: 10 }} to={`/loan/repayment/${record.id}`}>还款详情</Link>
+        <a style={{ paddingRight: 10 }} href='javascript:;'>提前还款</a>
+        <Popconfirm title='确定要删除么？' okText='确定' cancelText='取消' onConfirm={() => this.handleDelete(record.id)}>
+          <a href='javascript:;'>删除</a>
+        </Popconfirm>
+      </Fragment>
+    )
   }]
   componentDidMount() {
     const { dispatch } = this.props
@@ -112,6 +127,21 @@ export default class LoanList extends Component {
           }
         }))
       }, {
+        name: 'status',
+        type: 'select',
+        label: '状态',
+        style: {
+          minWidth: 100
+        },
+        defaultValue: 'all',
+        placeholder: '请选择状态',
+        dataSource: [{ name: '全部', value: 'all' }].concat(_.map(LOAN_STATUS, function (name, value) {
+          return {
+            name,
+            value
+          }
+        }))
+      }, {
         name: 'name',
         type: 'text',
         label: '名称',
@@ -124,6 +154,15 @@ export default class LoanList extends Component {
     const { dispatch } = this.props
     const { searchForm } = this.state
     dispatch({ type: 'loan/getLoanList', payload: searchForm })
+  }
+  handleDelete = (loanId) => {
+    const { dispatch } = this.props
+    dispatch({ type: 'loan/deleteLoan', payload: { loanId } }).then((result) => {
+      console.log(result)
+      if (result.success) {
+        this.getLoans()
+      }
+    })
   }
   handleRowClick = (record) => {
     const { dispatch } = this.props
@@ -139,6 +178,9 @@ export default class LoanList extends Component {
       let values = {}
       if (fieldsValue['platform'] !== 'all') {
         values['platform'] = fieldsValue['platform']
+      }
+      if (fieldsValue['status'] !== 'all') {
+        values['status'] = fieldsValue['status']
       }
       if (fieldsValue['name']) {
         values['name'] = fieldsValue['name']

@@ -1,11 +1,13 @@
 const moment = require('moment')
 const mongoose = require('mongoose')
+const ObjectId = require('mongodb').ObjectId
 const { response } = require('../utils/require')
 // const { floatFixed } = require('../utils')
 // const _ = require('lodash')
 const Loan = mongoose.model('Loan')
 const LoanReward = mongoose.model('LoanReward')
 const Repayment = mongoose.model('Repayment')
+const Receipt = mongoose.model('Receipt')
 const Decimal = require('../utils/decimal')
 
 // 根据不同的平台，计算小数位是否四舍五入
@@ -260,7 +262,8 @@ const generateRepayment = function (loan) {
             break
           case 3: //  等额本息固定利息，如广信贷
             channelRewardInterest = new Decimal(channelRewardInterest).plus(calcRewardInterest(loan.principal, loan.interestRate, loan.platformReward.interestRateIncrease, loan.term, loan.platform))
-            break
+            breaklatestDividendDeclaredDate
+
         }
       }
       let channelRewardFee = platformRound(new Decimal(channelRewardInterest).mul(loan.channelReward.interestManagementFee))
@@ -318,6 +321,13 @@ exports.add = async (ctx, next) => {
   })
 }
 
+exports.delete = async (ctx, next) => {
+  let loanId = ctx.request.query.loanId
+  ctx.response.body = await Repayment.deleteMany({ loan: ObjectId(loanId) }).exec().then((data) => {
+    return Loan.deleteOne({ _id: ObjectId(loanId) }).exec().then(() => response())
+  })
+}
+
 exports.import = async (ctx, next) => {
   let loans = []
   ctx.request.body.forEach((item) => {
@@ -335,4 +345,16 @@ exports.import = async (ctx, next) => {
   }).catch(function (err) {
     return response({}, [err], 500)
   })
+}
+
+// 提前还款
+exports.prepayment = async (ctx, next) => {
+  console.log(ctx.request.body)
+  let { loanId, principal, interest, fee, amount, receiptDate, platform } = ctx.request.body
+  // TODO: 该方法无法做到事务性，会产生失败不回滚的情况
+  ctx.response.body = await Promise.all([
+    new Receipt({ principal, interest, fee, amount, receiptDate, platform }).save(),
+    Loan.findByIdAndUpdate(loanId, { status: 3 }).exec(),
+    Repayment.updateMany({ loan: ObjectId(loanId), status: 0 }, { '$set': { status: 3 } }).exec()
+  ]).then(() => response(200), (err) => response({}, [err], 500))
 }

@@ -27,3 +27,9 @@ export async function saveLoan(params) {
 export async function getRepayment(params) {
   return request(`${CONTXT_PATH}/loan/repayment?loanId=${params.loanId}`)
 }
+
+export async function deleteLoan(params) {
+  return request(CONTXT_PATH + '/loan?' + 'loanId=' + params.loanId, {
+    method: 'delete'
+  })
+}

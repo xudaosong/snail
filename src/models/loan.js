@@ -1,4 +1,4 @@
-import { getPlatform, saveLoan, getLoan, getRepayment } from '../services/loan'
+import { getPlatform, saveLoan, getLoan, deleteLoan, getRepayment } from '../services/loan'
 
 export default {
   namespace: 'loan',
@@ -32,6 +32,9 @@ export default {
     },
     * saveLoan({ payload }, { call, put }) {
       return yield call(saveLoan, payload)
+    },
+    * deleteLoan({ payload }, { call, put }) {
+      return yield call(deleteLoan, payload)
     },
     * getRepaymentList({ payload }, { call, put }) {  // eslint-disable-line
       const repaymentList = yield call(getRepayment, payload)

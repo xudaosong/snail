@@ -61,15 +61,14 @@ export default class LoanAdd extends Component {
       repaymentMode: '1'
     },
     '饭团金服': {
-      termUnit: '2',
-      repaymentMode: '2',
+      termUnit: '1',
+      repaymentMode: '3',
       platformReward: {
         interestType: '1',
         redEnvelopeType: '2'
       },
       channelReward: {
         interestType: '1',
-        interestRateIncrease: 1.5,
         redEnvelopeType: '2'
       }
     },

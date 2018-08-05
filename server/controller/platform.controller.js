@@ -15,3 +15,18 @@ exports.add = async (ctx, next) => {
     return response({}, [err], 500)
   })
 }
+
+exports.updateFee = async (ctx, next) => {
+  const params = ctx.request.body
+  if (params.isReset) {
+    
+  } else {
+    Platform.findByIdAndUpdate(params.platformId, { managementCost: params.managementCost })
+  }
+  const platform = new Platform(ctx.request.body)
+  ctx.response.body = await platform.save().then(function () {
+    return response()
+  }).catch(function (err) {
+    return response({}, [err], 500)
+  })
+}

@@ -10,7 +10,10 @@ module.exports = function (router) {
   router
     .get('/api/v1/loan', loan.getList)
     .post('/api/v1/loan', loan.add)
+    .delete('/api/v1/loan', loan.delete)
     .post('/api/v1/loan/import', loan.import)
+  router
+    .post('/api/v1/loan/prepayment', loan.prepayment)
   router
     .get('/api/v1/loan/repayment', loan.getRepaymentList)
   router
