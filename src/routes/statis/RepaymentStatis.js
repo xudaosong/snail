@@ -122,7 +122,7 @@ export default class RepaymentStatis extends Component {
       })
       if (repaymentGroup[key].length > 1) {
         dom.push(
-          <tr key={key}>
+          <tr className={styles['subtotal']} key={key} >
             <td>小计</td>
             <td className={styles['right']}>{formatCurrency(principalTotal)}</td>
             <td className={styles['right']}>{formatCurrency(interestTotal)}</td>
