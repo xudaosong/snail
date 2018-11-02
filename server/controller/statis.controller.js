@@ -16,7 +16,7 @@ exports.getRepayment = async (ctx, next) => {
     startDate = moment().startOf('month'),
     endDate = null,
     platform = null,
-    status = null
+    status = '0'
   } = ctx.request.query
   if (endDate === null) {
     endDate = new Date(date.getFullYear(), date.getMonth() + 1, 1)

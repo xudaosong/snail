@@ -262,8 +262,7 @@ const generateRepayment = function (loan) {
             break
           case 3: //  等额本息固定利息，如广信贷
             channelRewardInterest = new Decimal(channelRewardInterest).plus(calcRewardInterest(loan.principal, loan.interestRate, loan.platformReward.interestRateIncrease, loan.term, loan.platform))
-            breaklatestDividendDeclaredDate
-
+            break
         }
       }
       let channelRewardFee = platformRound(new Decimal(channelRewardInterest).mul(loan.channelReward.interestManagementFee))
